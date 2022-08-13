@@ -1,3 +1,0 @@
-Issue with grabbing data with inquirer -- difficulty relooping the same question
-
-1) Must edit sql data once data is inputted

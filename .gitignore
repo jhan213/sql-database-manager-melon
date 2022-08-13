@@ -1,4 +1,4 @@
 node_modules
-.txt
+*.txt
 .DS_store
 .env
