@@ -8,11 +8,13 @@
 
 ## Description <a name="description"></a>
 The SQL Database Manager is a NodeJS program that runs in the terminal to update a remote SQL database that stores employee information. The user can perform the following tasks:
-*View all employees
-*Add an employee
-*Update an employee's role
-*View all roles\n*Add a role
-*View all departments\n*Add a department
+* View all employees
+* Add an employee
+* Update an employee's role
+* View all roles
+* Add a role
+* View all departments
+* Add a department
 ## Installation Instructions <a name="installation"></a>
 Download the project directory and install the necessary dependencies with `npm i` from the root directory. Run `npm run start` to start the program once the SQL database is initialized.
 ## Usage Information<a name="usage"></a>
