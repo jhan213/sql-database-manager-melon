@@ -7,77 +7,71 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// Create SQL connection
 const db = mysql.createConnection(
     {
-      host: 'localhost',
-      // MySQL Username
-      user: 'root',
-      // TODO: Add MySQL Password
-      password: '2023',
-      database: 'employee_db'
+        host: 'localhost',
+        // MySQL Username
+        user: 'root',
+        // MySQL Password
+        password: '2023',
+        database: 'employee_db'
     },
     console.log(`Connected to the employee_db database.`)
-  );
+);
 
 const inquirer = require('inquirer');
 const { ConsoleMessage, ExecutionContext } = require('puppeteer');
 
-function begin(){
-    // begin() is the initial function to ask the user what they would like to do in the program
+// Function for displaying the Main Menu
+function begin() {
     inquirer
-  .prompt([
-    {
-        type: 'list',
-        name: "task",
-        message: "What would you like to do?",
-        choices: ["View All Employees", "Add Employee", "Update Employee Role", "View All Roles", "Add Role", "View All Departments", "Add Department", "Quit"],
-    }
-  ])
-  .then((data) => {
-    run(data.task);
-})
-.catch((error) => {
-  if (error.isTtyError) {
-    // Prompt couldn't be rendered in the current environment
-  } else {
-    // Something else went wrong
-  }
-});
+        .prompt([
+            {
+                type: 'list',
+                name: "task",
+                message: "What would you like to do?",
+                choices: ["View All Employees", "Add Employee", "Update Employee Role", "View All Roles", "Add Role", "View All Departments", "Add Department", "Quit"],
+            }
+        ])
+        .then((data) => {
+            run(data.task);
+        })
+        .catch((error) => {
+            if (error.isTtyError) { } else { }
+        });
 }
 
+// Initial display
 inquirer
-  .prompt([
-    {
-        type: 'list',
-        name: "task",
-        message: "What would you like to do?",
-        choices: ["View All Employees", "Add Employee", "Update Employee Role", "View All Roles", "Add Role", "View All Departments", "Add Department", "Quit"],
-    }
-  ])
-  .then((data) => {
-    run(data.task);
-  })
-  .catch((error) => {
-    if (error.isTtyError) {
-      // Prompt couldn't be rendered in the current environment
-    } else {
-      // Something else went wrong
-    }
-  });
+    .prompt([
+        {
+            type: 'list',
+            name: "task",
+            message: "What would you like to do?",
+            choices: ["View All Employees", "Add Employee", "Update Employee Role", "View All Roles", "Add Role", "View All Departments", "Add Department", "Quit"],
+        }
+    ])
+    .then((data) => {
+        run(data.task);
+    })
+    .catch((error) => {
+        if (error.isTtyError) { } else { }
+    });
 
-function run(task){
-    // run function checks value from start function and asks for the inputs and updates the sql db
-    if(task == "View All Employees"){
-        // show dataframe of all employees
+// Change the display based on the user's selected task
+function run(task) {
+    // View all existing employees
+    if (task == "View All Employees") {
         db.query('SELECT * FROM employee', function (err, results) {
             console.log(results);
-            setTimeout(function(){
+            setTimeout(function () {
                 begin();
             }, 1000);
         });
     }
-    if(task == "Add Employee"){
-        // add an employee to the employee db
+    // Add employee
+    if (task == "Add Employee") {
         inquirer
             .prompt([
                 {
@@ -92,63 +86,66 @@ function run(task){
                     type: 'list',
                     name: "employeeRole",
                     message: "What is the employee's role?",
-                    choices: [0,1,2,3], // roles array
+                    choices: [0, 1, 2, 3],
                 },
                 {
                     type: 'list',
                     name: "employeeManager",
                     message: "Who is the employee's manager?",
-                    choices: [0,1,2,3], // manager array w/ none
+                    choices: [0, 1, 2, 3],
                 },
             ])
             .then((data) => {
-                db.connect(function(err){
-                    if(err) throw err;
-                    db.query(`INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES ('${0}', '${data.first}', '${data.last}', '${data.employeeRole}', '${data.employeeManager}')`, function(err, result){
-                        if(err) throw err;
+                db.connect(function (err) {
+                    if (err) throw err;
+                    db.query(`INSERT INTO employee (id, first_name, last_name, role_id, manager_id) VALUES ('${0}', '${data.first}', '${data.last}', '${data.employeeRole}', '${data.employeeManager}')`, function (err, result) {
+                        if (err) throw err;
                         console.log("Employee inserted.")
                     })
                 })
-                setTimeout(function(){
+                setTimeout(function () {
                     begin();
                 }, 1000);
             })
     }
-    if(task == "Update Employee Role"){
+    // Update existing employee's role
+    if (task == "Update Employee Role") {
         inquirer
-        .prompt([
-            {
-                type: 'list',
-                name: "employeeName",
-                message: "What is the name of the employee?",
-                choices: [0,1,2,3], // employee array
-            },
-            {
-                type: 'list',
-                name: "role",
-                message: "Which role should the employee be updated to?",
-                choices: [0,1,2,3], // employee array
-            },
-        ])
-        .then((data) => {
-            db.connect(function(err){
-                if(err) throw err;
-                db.query(`UPDATE employee SET role_id = '${data.role}' WHERE id = '${data.employeeName}'`, function(err, result){
-                    if(err) throw err;
-                    console.log("Employee's role updated.")
+            .prompt([
+                {
+                    type: 'list',
+                    name: "employeeName",
+                    message: "What is the name of the employee?",
+                    choices: [0, 1, 2, 3],
+                },
+                {
+                    type: 'list',
+                    name: "role",
+                    message: "Which role should the employee be updated to?",
+                    choices: [0, 1, 2, 3],
+                },
+            ])
+            .then((data) => {
+                db.connect(function (err) {
+                    if (err) throw err;
+                    db.query(`UPDATE employee SET role_id = '${data.role}' WHERE id = '${data.employeeName}'`, function (err, result) {
+                        if (err) throw err;
+                        console.log("Employee's role updated.")
+                    })
                 })
             })
-        })
     }
-    if(task == "View All Roles"){
+    // View all roles
+    if (task == "View All Roles") {
         db.query('SELECT * FROM roles', function (err, results) {
             console.table(results);
-            setTimeout(function(){
+            setTimeout(function () {
                 begin();
             }, 1000);
         });
     }
-    if(task == "Add Role"){
+    // Add role
+    if (task == "Add Role") {
         inquirer
             .prompt([
                 {
@@ -163,32 +160,33 @@ function run(task){
                     type: 'list',
                     name: "department",
                     message: "Which department store does the role belong to?",
-                    choices: [0,1,2,3], // department array
+                    choices: [0, 1, 2, 3],
                 }
             ])
             .then((roleData) => {
-                db.connect(function(err){
-                    if(err) throw err;
-                    db.query(`INSERT INTO roles (id, title, salary, department_id) VALUES ('${0}', '${roleData.name}', '${roleData.salary}', '${roleData.department}')`, function(err, result){
-                        if(err) throw err;
+                db.connect(function (err) {
+                    if (err) throw err;
+                    db.query(`INSERT INTO roles (id, title, salary, department_id) VALUES ('${0}', '${roleData.name}', '${roleData.salary}', '${roleData.department}')`, function (err, result) {
+                        if (err) throw err;
                         console.log("Role inserted.")
                     })
                 })
-                setTimeout(function(){
+                setTimeout(function () {
                     begin();
                 }, 1000);
             })
     }
-    if(task == "View All Departments"){
-        // show small datadrame of id and  name of departments
+    // View all departments
+    if (task == "View All Departments") {
         db.query('SELECT * FROM department', function (err, results) {
             console.table(results);
-            setTimeout(function(){
+            setTimeout(function () {
                 begin();
             }, 1000);
         });
     }
-    if(task == "Add Department"){
+    // Add department
+    if (task == "Add Department") {
         inquirer
             .prompt([
                 {
@@ -197,19 +195,19 @@ function run(task){
                 }
             ])
             .then((data) => {
-                db.connect(function(err){
-                    if(err) throw err;
-                    db.query(`INSERT INTO department (id, d_name) VALUES ('${0}', '${data.name}')`, function(err, result){
-                        if(err) throw err;
+                db.connect(function (err) {
+                    if (err) throw err;
+                    db.query(`INSERT INTO department (id, d_name) VALUES ('${0}', '${data.name}')`, function (err, result) {
+                        if (err) throw err;
                         console.log("Department added.")
                     })
                 })
-                setTimeout(function(){
+                setTimeout(function () {
                     begin();
                 }, 1000);
             })
     }
-    if(task == "Quit"){
+    if (task == "Quit") {
         process.exit();
     }
 }
